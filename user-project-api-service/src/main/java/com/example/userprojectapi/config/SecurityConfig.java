@@ -1,7 +1,7 @@
 package com.example.userprojectapi.config;
 
 import com.example.userprojectapi.authentication.JwtAuthorizationFilter;
-import com.example.userprojectapi.services.CustomUserDetailsService;
+import com.example.userprojectapi.services.auth.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,9 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -44,6 +42,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeHttpRequest -> authorizeHttpRequest
                         .requestMatchers("/api/*/auth/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/swagger-resources/configuration/ui").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .anyRequest().authenticated())
@@ -58,10 +57,5 @@ public class SecurityConfig {
     public NoOpPasswordEncoder passwordEncoder() {
         return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
     }
-
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
 
 }

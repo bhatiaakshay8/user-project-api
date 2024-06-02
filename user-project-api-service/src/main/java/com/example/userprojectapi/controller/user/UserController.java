@@ -1,9 +1,11 @@
 package com.example.userprojectapi.controller.user;
 
 import com.example.userprojectapi.data.user.UserRepository;
+import com.example.userprojectapi.model.exception.NotAllowedException;
 import com.example.userprojectapi.model.user.UpdateUser;
 import com.example.userprojectapi.model.user.User;
-import com.example.userprojectapi.model.exception.NotAllowedException;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -30,9 +33,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class UserController {
 
     private final UserRepository userRepository;
+    private final MeterRegistry meterRegistry;
 
-    public UserController(UserRepository userRepository) {
+    public UserController(UserRepository userRepository,
+                          MeterRegistry meterRegistry) {
         this.userRepository = userRepository;
+        this.meterRegistry = meterRegistry;
     }
 
     @GetMapping("/{id}")
@@ -45,6 +51,13 @@ public class UserController {
     })
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         log.info("getting User id {}", id);
+
+        Counter counter = Counter.builder("api_user_get")
+                .tag("userId", String.valueOf(id))
+                .description("a number of requests to /api/v0/users/{id} endpoint")
+                .register(meterRegistry);
+        counter.increment();
+
         User user = userRepository.getUser(id);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
@@ -60,6 +73,7 @@ public class UserController {
     public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
         log.info("Adding User {}", user);
         userRepository.insertUser(user);
+        log.info("User {} added", user);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
@@ -74,6 +88,7 @@ public class UserController {
     public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUser updateUser) {
         log.info("Update User id {} with info: {}", id, updateUser);
         User user = userRepository.updateUser(id, updateUser);
+        log.info("User id {} updated - {}", id, user);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
@@ -87,13 +102,14 @@ public class UserController {
             @ApiResponse(responseCode = "405", description = "User Cannot Delete Itself")
     })
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+        log.info("Deleting User id {}", id);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.getUser(id);
-        if(auth != null && user.getEmail().equals(auth.getPrincipal())) {
+        if (auth != null && user.getEmail().equals(auth.getPrincipal())) {
             throw new NotAllowedException("User Cannot delete itself");
         }
-        log.info("Deleting User id {}", id);
         userRepository.deleteUser(id);
+        log.info("Deleted User id {}", id);
         return ResponseEntity.ok().build();
     }
 

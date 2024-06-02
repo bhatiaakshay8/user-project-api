@@ -4,7 +4,6 @@ import com.example.userprojectapi.data.project.UserProjectRepository;
 import com.example.userprojectapi.data.user.UserRepository;
 import com.example.userprojectapi.model.project.UserProject;
 import com.example.userprojectapi.model.user.User;
-import com.example.userprojectapi.model.exception.NotAllowedException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,10 +13,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,7 +50,8 @@ public class UserProjectController {
         log.info("Getting Projects for User id {}", userId);
         User user = userRepository.getUser(userId);
         List<UserProject> userProjects = userProjectRepository.getProjectsForUser(user);
-        if(userProjects.isEmpty()) {
+        log.info("User {} has {} projects", userId, userProjects.size());
+        if (userProjects.isEmpty()) {
             return new ResponseEntity<>(userProjects, HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(userProjects, HttpStatus.OK);
@@ -73,6 +70,7 @@ public class UserProjectController {
         User user = userRepository.getUser(userId);
         userProject.setUserId(userId);
         userProjectRepository.insertProjectToUser(user, userProject);
+        log.info("Project {} added to User {}", userProject.getName(), userId);
         return new ResponseEntity<>(userProject, HttpStatus.CREATED);
     }
 

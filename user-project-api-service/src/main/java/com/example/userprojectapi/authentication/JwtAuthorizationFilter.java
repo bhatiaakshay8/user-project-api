@@ -1,7 +1,7 @@
 package com.example.userprojectapi.authentication;
 
 import com.example.userprojectapi.authentication.jwt.JwtUtil;
-import com.example.userprojectapi.services.CustomUserDetailsService;
+import com.example.userprojectapi.services.auth.CustomUserDetailsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -61,6 +61,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             }
 
         } catch (Exception e) {
+            log.error("Authentication Error:", e);
             errorDetails.put("message", "Authentication Error");
             errorDetails.put("details", e.getMessage());
             response.setStatus(HttpStatus.FORBIDDEN.value());

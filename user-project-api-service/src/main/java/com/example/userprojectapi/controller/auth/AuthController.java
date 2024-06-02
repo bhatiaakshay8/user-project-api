@@ -1,11 +1,12 @@
 package com.example.userprojectapi.controller.auth;
 
 import com.example.userprojectapi.authentication.jwt.JwtUtil;
-import com.example.userprojectapi.model.user.User;
-import com.example.userprojectapi.model.login.LoginReq;
 import com.example.userprojectapi.model.exception.ErrorRes;
+import com.example.userprojectapi.model.login.LoginReq;
 import com.example.userprojectapi.model.login.LoginRes;
+import com.example.userprojectapi.model.user.User;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequestMapping("/api/v0/auth")
 public class AuthController {
@@ -37,8 +39,8 @@ public class AuthController {
     @ResponseBody
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<Object> login(@Valid @RequestBody LoginReq loginReq) {
-
         try {
+            log.info("Authenticating User with credentials: {}", loginReq);
             Authentication authentication =
                     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginReq.getEmail(), loginReq.getPassword()));
             String email = authentication.getName();
@@ -53,11 +55,13 @@ public class AuthController {
             LoginRes loginRes = new LoginRes(email, token);
 
             return ResponseEntity.ok(loginRes);
-
         } catch (BadCredentialsException e) {
+            //Not needed to be error logged as could happen often
+            log.debug("Incorrect Credentials: ", e);
             ErrorRes errorResponse = new ErrorRes(HttpStatus.BAD_REQUEST, "Invalid username or password");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         } catch (Exception e) {
+            log.error("Authentication Failure: ", e);
             ErrorRes errorResponse = new ErrorRes(HttpStatus.BAD_REQUEST, e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }

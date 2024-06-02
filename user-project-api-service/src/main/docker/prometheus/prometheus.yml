@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+
+    # Override the global default and scrape targets from this job every 5 seconds.
+    scrape_interval: 5s
+
+    static_configs:
+      - targets: ['prometheus:9090']
+
+  - job_name: 'user-project-api-service'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['user-project-api-service:8080']
