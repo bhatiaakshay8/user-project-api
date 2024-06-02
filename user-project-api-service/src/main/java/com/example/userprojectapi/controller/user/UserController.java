@@ -1,0 +1,100 @@
+package com.example.userprojectapi.controller.user;
+
+import com.example.userprojectapi.data.user.UserRepository;
+import com.example.userprojectapi.model.user.UpdateUser;
+import com.example.userprojectapi.model.user.User;
+import com.example.userprojectapi.model.exception.NotAllowedException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Slf4j
+@Controller
+@RequestMapping("/api/v0/users")
+@SecurityRequirement(name = "Bearer Authentication")
+public class UserController {
+
+    private final UserRepository userRepository;
+
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @GetMapping("/{id}")
+    @Operation(description = "Used for retrieving user information")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved",
+                    headers = @Header(name = "Authorization", required = true,
+                            description = "Bearer Token for accessing the endpoint")),
+            @ApiResponse(responseCode = "404", description = "User Not Found")
+    })
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        log.info("getting User id {}", id);
+        User user = userRepository.getUser(id);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @PostMapping("")
+    @Operation(description = "Used for creating new user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Successfully created",
+                    headers = @Header(name = "Authorization", required = true,
+                            description = "Bearer Token for accessing the endpoint")),
+            @ApiResponse(responseCode = "422", description = "User already exists")
+    })
+    public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
+        log.info("Adding User {}", user);
+        userRepository.insertUser(user);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{id}")
+    @Operation(description = "Used for updating a user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully updated",
+                    headers = @Header(name = "Authorization", required = true,
+                            description = "Bearer Token for accessing the endpoint")),
+            @ApiResponse(responseCode = "404", description = "User Not Found")
+    })
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUser updateUser) {
+        log.info("Update User id {} with info: {}", id, updateUser);
+        User user = userRepository.updateUser(id, updateUser);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(description = "Used for deleting a user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully deleted",
+                    headers = @Header(name = "Authorization", required = true,
+                            description = "Bearer Token for accessing the endpoint")),
+            @ApiResponse(responseCode = "404", description = "User Not Found"),
+            @ApiResponse(responseCode = "405", description = "User Cannot Delete Itself")
+    })
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.getUser(id);
+        if(auth != null && user.getEmail().equals(auth.getPrincipal())) {
+            throw new NotAllowedException("User Cannot delete itself");
+        }
+        log.info("Deleting User id {}", id);
+        userRepository.deleteUser(id);
+        return ResponseEntity.ok().build();
+    }
+
+}

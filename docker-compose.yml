@@ -1,0 +1,36 @@
+services:
+  user-project-api-service:
+    image: user-project-api-service:DEV-SNAPSHOT
+    container_name: "user-project-api-service"
+    networks:
+      - user-project-api-service
+    depends_on:
+      - mssql
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./user-project-api-service/src/main/docker/env.list
+
+  mssql:
+    container_name: 'mssql'
+    build:
+      context: ./mssql
+      dockerfile: mssql.Dockerfile
+    restart: on-failure
+    networks:
+      - user-project-api-service
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql:/var/opt/mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Mssq1pas_
+
+networks:
+  user-project-api-service:
+    name: user-project-api-service
+    driver: bridge
+
+volumes:
+  mssql:
