@@ -54,4 +54,9 @@ public class UserRepository {
     public void deleteUser(Long id) {
         userMapper.deleteUser(id);
     }
+
+    //Visible for testing
+    public void deleteAllUsers() {
+        userMapper.deleteAllUsers();
+    }
 }

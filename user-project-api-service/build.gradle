@@ -19,24 +19,17 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation' // For Validations
     implementation 'org.liquibase:liquibase-core' // For DB Migrations
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3' // For DB queries (ORM)
-    compileOnly 'org.projectlombok:lombok' // For Annotated DTOs
+    compileOnly 'org.projectlombok:lombok' // For Annotated DTOs compilation
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc' // For MS SQL driver
-    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus' //For Metrics
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5' // For JWT Auth Tokens
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // For JWT Auth Tokens
-
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor' //For auto configurations
+    annotationProcessor 'org.projectlombok:lombok' //for lombok annotation processing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-    testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.3'
+    testImplementation 'com.h2database:h2'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.testcontainers:junit-jupiter'
-    testImplementation 'org.testcontainers:mssqlserver'
-    testImplementation 'org.testcontainers:postgresql'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation 'org.apache.groovy:groovy:4.0.14'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }

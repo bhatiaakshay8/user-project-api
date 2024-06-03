@@ -44,6 +44,7 @@ public class UserProjectController {
                     headers = @Header(name = "Authorization", required = true,
                             description = "Bearer Token for accessing the endpoint")),
             @ApiResponse(responseCode = "204", description = "No Projects"),
+            @ApiResponse(responseCode = "403", description = "Not Authenticated"),
             @ApiResponse(responseCode = "404", description = "User Not Found")
     })
     public ResponseEntity<List<UserProject>> getProjectsForUser(@PathVariable Long userId) {
@@ -60,9 +61,10 @@ public class UserProjectController {
     @PostMapping("")
     @Operation(description = "Used for adding a project to user")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successfully added",
+            @ApiResponse(responseCode = "201", description = "Successfully added",
                     headers = @Header(name = "Authorization", required = true,
                             description = "Bearer Token for accessing the endpoint")),
+            @ApiResponse(responseCode = "403", description = "Not Authenticated"),
             @ApiResponse(responseCode = "422", description = "Project already exists for user")
     })
     public ResponseEntity<UserProject> addProjectToUser(@PathVariable Long userId, @Valid @RequestBody UserProject userProject) {

@@ -1,0 +1,1 @@
+insert into tb_user(email, password, name) values('admin@example.com','password123','admin');

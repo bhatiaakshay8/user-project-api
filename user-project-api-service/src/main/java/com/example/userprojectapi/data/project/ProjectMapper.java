@@ -1,6 +1,7 @@
 package com.example.userprojectapi.data.project;
 
 import com.example.userprojectapi.model.project.UserProject;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -15,7 +16,7 @@ import java.util.List;
 public interface ProjectMapper {
 
     @Options(useGeneratedKeys = true, keyProperty = "up.id")
-    @Insert("INSERT into tb_user_external_project " +
+    @Insert("INSERT into tb_user_external_project(userId, name) " +
             "VALUES(#{userId}, #{up.name})")
     void insertProjectToUser(Long userId, @Param("up") UserProject userProject);
 
@@ -26,5 +27,11 @@ public interface ProjectMapper {
     @Select("SELECT id, userId, name FROM tb_user_external_project " +
             "WHERE userId=#{userId}")
     List<UserProject> getProjectsForUser(Long userId);
+
+    @Delete("Delete from tb_user_external_project")
+    void deleteProjects();
+
+    @Delete("Delete from tb_user_external_project where userId=#{userId}")
+    void deleteProjectsForUser(Long userId);
 
 }

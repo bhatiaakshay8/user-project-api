@@ -30,4 +30,12 @@ public class UserProjectRepository {
     public List<UserProject> getProjectsForUser(User user) {
         return projectMapper.getProjectsForUser(user.getId());
     }
+
+    public void deleteAllProjects() {
+        projectMapper.deleteProjects();
+    }
+
+    public void deleteAllProjectsForUser(Long userId) {
+        projectMapper.deleteProjectsForUser(userId);
+    }
 }

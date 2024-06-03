@@ -1,0 +1,110 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > UserMapper</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.userprojectapi.data.user</a>
+</div>
+
+<h1>Coverage Summary for Class: UserMapper (com.example.userprojectapi.data.user)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">UserMapper</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.userprojectapi.data.user;
+&nbsp;
+&nbsp;import com.example.userprojectapi.model.user.UpdateUser;
+&nbsp;import com.example.userprojectapi.model.user.User;
+&nbsp;import org.apache.ibatis.annotations.Delete;
+&nbsp;import org.apache.ibatis.annotations.Insert;
+&nbsp;import org.apache.ibatis.annotations.Mapper;
+&nbsp;import org.apache.ibatis.annotations.Options;
+&nbsp;import org.apache.ibatis.annotations.Param;
+&nbsp;import org.apache.ibatis.annotations.Select;
+&nbsp;import org.apache.ibatis.annotations.Update;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;@Transactional
+&nbsp;@Mapper
+&nbsp;public interface UserMapper {
+&nbsp;
+&nbsp;    @Options(useGeneratedKeys = true, keyProperty = &quot;id&quot;)
+&nbsp;    @Insert(&quot;INSERT into tb_user(email, password, name) &quot; +
+&nbsp;            &quot;VALUES(#{user.email}, #{user.password}, #{user.name})&quot;)
+&nbsp;    void insertUser(@Param(&quot;user&quot;) User user);
+&nbsp;
+&nbsp;    @Update(&quot;UPDATE tb_user &quot; +
+&nbsp;            &quot;SET password=#{user.password}, &quot; +
+&nbsp;            &quot;name=#{user.name} &quot; +
+&nbsp;            &quot;WHERE id=#{id}&quot;)
+&nbsp;    void updateUser(Long id, @Param(&quot;user&quot;) UpdateUser updateUser);
+&nbsp;
+&nbsp;    @Select(&quot;SELECT COALESCE((SELECT 1 FROM tb_user WHERE email=#{email}), 0)&quot;)
+&nbsp;    boolean checkUserExists(String email);
+&nbsp;
+&nbsp;    @Select(&quot;SELECT id, email, password, name FROM tb_user where email=#{email}&quot;)
+&nbsp;    User getUserByEmail(String email);
+&nbsp;
+&nbsp;    @Select(&quot;SELECT id, email, password, name FROM tb_user where id=#{id}&quot;)
+&nbsp;    User getUser(Long id);
+&nbsp;
+&nbsp;    @Delete(&quot;Delete from tb_user where id=#{id}&quot;)
+&nbsp;    void deleteUser(Long id);
+&nbsp;
+&nbsp;    @Delete(&quot;Delete from tb_user&quot;)
+&nbsp;    void deleteAllUsers();
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-03 03:12</div>
+</div>
+</body>
+</html>

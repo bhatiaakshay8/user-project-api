@@ -7,6 +7,7 @@ import com.example.userprojectapi.model.login.LoginRes;
 import com.example.userprojectapi.model.user.User;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +27,7 @@ import java.util.List;
 @Slf4j
 @Controller
 @RequestMapping("/api/v0/auth")
+@Profile({"development", "production"})
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;

@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface UserMapper {
 
     @Options(useGeneratedKeys = true, keyProperty = "id")
-    @Insert("INSERT into tb_user " +
+    @Insert("INSERT into tb_user(email, password, name) " +
             "VALUES(#{user.email}, #{user.password}, #{user.name})")
     void insertUser(@Param("user") User user);
 
@@ -37,4 +37,7 @@ public interface UserMapper {
 
     @Delete("Delete from tb_user where id=#{id}")
     void deleteUser(Long id);
+
+    @Delete("Delete from tb_user")
+    void deleteAllUsers();
 }

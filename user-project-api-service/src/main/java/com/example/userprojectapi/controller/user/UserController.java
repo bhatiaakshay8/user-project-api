@@ -1,5 +1,6 @@
 package com.example.userprojectapi.controller.user;
 
+import com.example.userprojectapi.data.project.UserProjectRepository;
 import com.example.userprojectapi.data.user.UserRepository;
 import com.example.userprojectapi.model.exception.NotAllowedException;
 import com.example.userprojectapi.model.user.UpdateUser;
@@ -33,12 +34,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class UserController {
 
     private final UserRepository userRepository;
+    private final UserProjectRepository userProjectRepository;
     private final MeterRegistry meterRegistry;
 
     public UserController(UserRepository userRepository,
+                          UserProjectRepository userProjectRepository,
                           MeterRegistry meterRegistry) {
         this.userRepository = userRepository;
         this.meterRegistry = meterRegistry;
+        this.userProjectRepository = userProjectRepository;
     }
 
     @GetMapping("/{id}")
@@ -47,6 +51,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved",
                     headers = @Header(name = "Authorization", required = true,
                             description = "Bearer Token for accessing the endpoint")),
+            @ApiResponse(responseCode = "403", description = "Not Authenticated"),
             @ApiResponse(responseCode = "404", description = "User Not Found")
     })
     public ResponseEntity<User> getUser(@PathVariable Long id) {
@@ -68,6 +73,7 @@ public class UserController {
             @ApiResponse(responseCode = "201", description = "Successfully created",
                     headers = @Header(name = "Authorization", required = true,
                             description = "Bearer Token for accessing the endpoint")),
+            @ApiResponse(responseCode = "403", description = "Not Authenticated"),
             @ApiResponse(responseCode = "422", description = "User already exists")
     })
     public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
@@ -83,6 +89,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Successfully updated",
                     headers = @Header(name = "Authorization", required = true,
                             description = "Bearer Token for accessing the endpoint")),
+            @ApiResponse(responseCode = "403", description = "Not Authenticated"),
             @ApiResponse(responseCode = "404", description = "User Not Found")
     })
     public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUser updateUser) {
@@ -98,6 +105,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Successfully deleted",
                     headers = @Header(name = "Authorization", required = true,
                             description = "Bearer Token for accessing the endpoint")),
+            @ApiResponse(responseCode = "403", description = "Not Authenticated"),
             @ApiResponse(responseCode = "404", description = "User Not Found"),
             @ApiResponse(responseCode = "405", description = "User Cannot Delete Itself")
     })
@@ -108,6 +116,9 @@ public class UserController {
         if (auth != null && user.getEmail().equals(auth.getPrincipal())) {
             throw new NotAllowedException("User Cannot delete itself");
         }
+        //Deleting projects as there is a foreign key constraint
+        //Another way is to throw an error since there are projects associated
+        userProjectRepository.deleteAllProjectsForUser(id);
         userRepository.deleteUser(id);
         log.info("Deleted User id {}", id);
         return ResponseEntity.ok().build();
