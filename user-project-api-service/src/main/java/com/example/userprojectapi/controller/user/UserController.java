@@ -64,6 +64,7 @@ public class UserController {
         counter.increment();
 
         User user = userRepository.getUser(id);
+        user.setPassword("*****");
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
@@ -80,6 +81,7 @@ public class UserController {
         log.info("Adding User {}", user);
         userRepository.insertUser(user);
         log.info("User {} added", user);
+        user.setPassword("*****");
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
@@ -96,6 +98,7 @@ public class UserController {
         log.info("Update User id {} with info: {}", id, updateUser);
         User user = userRepository.updateUser(id, updateUser);
         log.info("User id {} updated - {}", id, user);
+        user.setPassword("*****");
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 

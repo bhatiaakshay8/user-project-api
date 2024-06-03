@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class User {
     @Schema(type = "string", example = "password123")
     @NotBlank(message = "Password must not be blank")
     @Size(min = 1, max = 15, message = "Password size must be b/w 1-15")
+    @ToString.Exclude
     private String password;
     @Schema(type = "string", example = "admin")
     @Size(max = 120, message = "Name size must be max 120")

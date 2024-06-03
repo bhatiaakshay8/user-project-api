@@ -3,6 +3,7 @@ package com.example.userprojectapi.model.login;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.ToString;
 
 @Data
 public class LoginReq {
@@ -11,5 +12,6 @@ public class LoginReq {
     private String email;
     @Schema(type = "string", example = "password123")
     @NotBlank(message = "Password must not be blank")
+    @ToString.Exclude
     private String password;
 }
