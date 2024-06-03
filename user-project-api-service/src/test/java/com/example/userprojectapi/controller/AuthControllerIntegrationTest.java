@@ -94,7 +94,7 @@ public class AuthControllerIntegrationTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name", is(user.getName())))
                 .andExpect(jsonPath("$.email", is(user.getEmail())))
-                .andExpect(jsonPath("$.password", is(user.getPassword())));
+                .andExpect(jsonPath("$.password", is("*****")));
     }
 
     private User createTestUser(String email, String password, String name) {

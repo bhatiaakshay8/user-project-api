@@ -98,7 +98,7 @@ public class UserControllerIntegrationTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name", is(user.getName())))
                 .andExpect(jsonPath("$.email", is(user.getEmail())))
-                .andExpect(jsonPath("$.password", is(user.getPassword())));
+                .andExpect(jsonPath("$.password", is("*****")));
     }
 
     @Test
@@ -124,6 +124,38 @@ public class UserControllerIntegrationTest {
         assertThat(found)
                 .isNotNull()
                 .matches(u -> u.getName().equals(updateUser.getName()) && u.getPassword().equals(updateUser.getPassword()));
+
+    }
+
+    @Test
+    public void givenUser_whenUpdateUserWithOnlyNameProvided_thenUpdateJustNameWithStatus200() throws Exception {
+        User user = createTestUser("admin1@example.com", "password123", "admin1");
+        UpdateUser updateUser = new UpdateUser(null, "admin12");
+
+        mvc.perform(post("/api/v0/users/" + user.getId()).contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(updateUser)))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        User found = repository.findUserByEmail(user.getEmail());
+        assertThat(found)
+                .isNotNull()
+                .matches(u -> u.getName().equals(updateUser.getName()) && u.getPassword().equals(user.getPassword()));
+
+    }
+
+    @Test
+    public void givenUser_whenUpdateUserWithOnlyPasswordProvided_thenUpdateJustPasswordWithStatus200() throws Exception {
+        User user = createTestUser("admin1@example.com", "password123", "admin1");
+        UpdateUser updateUser = new UpdateUser("password1234", null);
+
+        mvc.perform(post("/api/v0/users/" + user.getId()).contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(updateUser)))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        User found = repository.findUserByEmail(user.getEmail());
+        assertThat(found)
+                .isNotNull()
+                .matches(u -> u.getName().equals(user.getName()) && u.getPassword().equals(updateUser.getPassword()));
 
     }
 

@@ -19,7 +19,7 @@ User Project Api Service
 
 ### Build and Deploy
 
-- Run `./deploy-all.sh` from root folder of this repo. It will deploy mssql instance, user-project-api-service. Metrics has been configured and exposed from spring boot app and the script will also deploy prometheus and grafana container for metrics scraping and visualisation.
+- Run `./scripts/deploy-all.sh` from root folder of this repo. It will deploy mssql instance, user-project-api-service. Metrics has been configured and exposed from spring boot app and the script will also deploy prometheus and grafana container for metrics scraping and visualisation.
 
 - You can access the service at:
   `localhost:${PORT}` PORT (currently 8080) is defined in `user-project-api-service/src/main/docker/env.list`
@@ -37,4 +37,12 @@ Authentication also implemented with initial user creds in db migration `user-pr
 
 ### Stop the docker stack
 
-run `docker compose stop` from root folder of this repo
+run `docker compose stop` from root folder of this repo or `./scripts/stop-all.sh`
+
+### Run Tests
+
+run `./gradlew test` or `./scripts/test-all.sh`
+
+### Test & Deploy both
+
+run `./scripts/testAnddeploy-all.sh`
