@@ -2,7 +2,7 @@
 User Project Api Service
 
 ### Assumptions taken
-1. Not Encoding Passwords as part of this assignment. Also, including it in the response. 
+1. Not Encoding Passwords as part of this assignment. But redacted from response and removed from logs.
 2. Email is Unique 
 3. Deleting a user currently will delete it’s external projects too. Can be implemented other way round by throwing an error. 
 4. Have applied uniqueness to project name too. Same project name cannot be added again to a user.
