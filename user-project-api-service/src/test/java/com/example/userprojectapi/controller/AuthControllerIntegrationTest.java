@@ -72,6 +72,18 @@ public class AuthControllerIntegrationTest {
     }
 
     @Test
+    public void whenValidInputButNoValidUser_thenThrow403() throws Exception {
+        LoginReq loginReq = new LoginReq();
+        loginReq.setEmail("admin100@example.com");
+        loginReq.setPassword("password123");
+
+        mvc.perform(post("/api/v0/auth/login").contentType(MediaType.APPLICATION_JSON).content(JsonUtil.toJson(loginReq)))
+                .andExpect(status().is(400))
+                .andExpect(jsonPath("$.httpStatus", is("BAD_REQUEST")))
+                .andExpect(jsonPath("$.message", is("Invalid username or password")));
+    }
+
+    @Test
     public void whenGivenValidEmailAndPasswordThenLoginAndReturnValidToken() throws Exception {
         LoginReq loginReq = new LoginReq();
         loginReq.setEmail("admin@example.com");
