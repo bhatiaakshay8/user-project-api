@@ -72,7 +72,7 @@ public class AuthControllerIntegrationTest {
     }
 
     @Test
-    public void whenValidInputButNoValidUser_thenThrow403() throws Exception {
+    public void whenValidInputButNoValidUser_thenThrow400() throws Exception {
         LoginReq loginReq = new LoginReq();
         loginReq.setEmail("admin100@example.com");
         loginReq.setPassword("password123");
