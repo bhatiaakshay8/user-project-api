@@ -76,7 +76,7 @@ public class UserProjectControllerIntegrationTest {
     }
 
     @Test
-    public void whenValidInput_thenAddProjectToGivenUser() throws Exception {
+    public void whenValidInput_AndUserDoesnExist_thenThrow404() throws Exception {
         UserProject userProject = new UserProject();
         userProject.setName("Example Project");
 

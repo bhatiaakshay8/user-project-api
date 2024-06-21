@@ -8,6 +8,13 @@ User Project Api Service
 4. Have applied uniqueness to project name too. Same project name cannot be added again to a user.
 5. Update user will update name and password only. Not updating email for now. 
 
+### Some Refactoring/Changes I couldn't do right now but would like to complete it:
+
+1. Adding List of UserProjects reference to User object and vice versa - Adding User object reference to a UserProject
+2. May be it would be better to combine UserController and UserProjectController but current implementation is also fine as it keeps controller code small.
+3. Separating LoggedInUser model and User model.
+4. Services to be async in nature to allow multiple non-blocking requests. Currently, spring boot is configured to handle one request at a time.
+
 ### Module structure
 - `user-project-api-service.main.docker` - Docker File, env file for docker compose and prometheus config are defined here
 - `user-project-api-service.main.java` - application entry point application context, rest controllers are defined here
