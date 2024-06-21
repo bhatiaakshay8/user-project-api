@@ -1,0 +1,3 @@
+rootProject.name = 'user-project-api'
+include 'user-project-api-service'
+

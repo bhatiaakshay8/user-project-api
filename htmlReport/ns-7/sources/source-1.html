@@ -1,0 +1,230 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > UserController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.example.userprojectapi.controller.user</a>
+</div>
+
+<h1>Coverage Summary for Class: UserController (com.example.userprojectapi.controller.user)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    96.7%
+  </span>
+  <span class="absValue">
+    (29/30)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.example.userprojectapi.controller.user;
+&nbsp;
+&nbsp;import com.example.userprojectapi.data.project.UserProjectRepository;
+&nbsp;import com.example.userprojectapi.data.user.UserRepository;
+&nbsp;import com.example.userprojectapi.model.exception.NotAllowedException;
+&nbsp;import com.example.userprojectapi.model.user.UpdateUser;
+&nbsp;import com.example.userprojectapi.model.user.User;
+&nbsp;import io.micrometer.core.instrument.Counter;
+&nbsp;import io.micrometer.core.instrument.MeterRegistry;
+&nbsp;import io.swagger.v3.oas.annotations.Operation;
+&nbsp;import io.swagger.v3.oas.annotations.headers.Header;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponse;
+&nbsp;import io.swagger.v3.oas.annotations.responses.ApiResponses;
+&nbsp;import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+&nbsp;import jakarta.validation.Valid;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.apache.commons.lang3.StringUtils;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.security.core.Authentication;
+&nbsp;import org.springframework.security.core.context.SecurityContextHolder;
+&nbsp;import org.springframework.stereotype.Controller;
+&nbsp;import org.springframework.web.bind.annotation.DeleteMapping;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PathVariable;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestBody;
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+&nbsp;
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;@Controller
+&nbsp;@RequestMapping(&quot;/api/v0/users&quot;)
+&nbsp;@SecurityRequirement(name = &quot;Bearer Authentication&quot;)
+&nbsp;public class UserController {
+&nbsp;
+&nbsp;    private final UserRepository userRepository;
+&nbsp;    private final UserProjectRepository userProjectRepository;
+&nbsp;    private final MeterRegistry meterRegistry;
+&nbsp;
+&nbsp;    public UserController(UserRepository userRepository,
+&nbsp;                          UserProjectRepository userProjectRepository,
+<b class="fc">&nbsp;                          MeterRegistry meterRegistry) {</b>
+<b class="fc">&nbsp;        this.userRepository = userRepository;</b>
+<b class="fc">&nbsp;        this.meterRegistry = meterRegistry;</b>
+<b class="fc">&nbsp;        this.userProjectRepository = userProjectRepository;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{id}&quot;)
+&nbsp;    @Operation(description = &quot;Used for retrieving user information&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully retrieved&quot;,
+&nbsp;                    headers = @Header(name = &quot;Authorization&quot;, required = true,
+&nbsp;                            description = &quot;Bearer Token for accessing the endpoint&quot;)),
+&nbsp;            @ApiResponse(responseCode = &quot;403&quot;, description = &quot;Not Authenticated&quot;),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;User Not Found&quot;)
+&nbsp;    })
+&nbsp;    public ResponseEntity&lt;User&gt; getUser(@PathVariable Long id) {
+<b class="fc">&nbsp;        log.info(&quot;getting User id {}&quot;, id);</b>
+&nbsp;
+<b class="fc">&nbsp;        Counter counter = Counter.builder(&quot;api_user_get&quot;)</b>
+<b class="fc">&nbsp;                .tag(&quot;userId&quot;, String.valueOf(id))</b>
+<b class="fc">&nbsp;                .description(&quot;a number of requests to /api/v0/users/{id} endpoint&quot;)</b>
+<b class="fc">&nbsp;                .register(meterRegistry);</b>
+<b class="fc">&nbsp;        counter.increment();</b>
+&nbsp;
+<b class="fc">&nbsp;        User user = userRepository.getUser(id);</b>
+<b class="fc">&nbsp;        return new ResponseEntity&lt;&gt;(user, HttpStatus.OK);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;&quot;)
+&nbsp;    @Operation(description = &quot;Used for creating new user&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;201&quot;, description = &quot;Successfully created&quot;,
+&nbsp;                    headers = @Header(name = &quot;Authorization&quot;, required = true,
+&nbsp;                            description = &quot;Bearer Token for accessing the endpoint&quot;)),
+&nbsp;            @ApiResponse(responseCode = &quot;403&quot;, description = &quot;Not Authenticated&quot;),
+&nbsp;            @ApiResponse(responseCode = &quot;422&quot;, description = &quot;User already exists&quot;)
+&nbsp;    })
+&nbsp;    public ResponseEntity&lt;User&gt; addUser(@Valid @RequestBody User user) {
+<b class="fc">&nbsp;        log.info(&quot;Adding User {}&quot;, user);</b>
+<b class="fc">&nbsp;        userRepository.insertUser(user);</b>
+<b class="fc">&nbsp;        log.info(&quot;User {} added&quot;, user);</b>
+<b class="fc">&nbsp;        return new ResponseEntity&lt;&gt;(user, HttpStatus.CREATED);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/{id}&quot;)
+&nbsp;    @Operation(description = &quot;Used for updating a user&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully updated&quot;,
+&nbsp;                    headers = @Header(name = &quot;Authorization&quot;, required = true,
+&nbsp;                            description = &quot;Bearer Token for accessing the endpoint&quot;)),
+&nbsp;            @ApiResponse(responseCode = &quot;403&quot;, description = &quot;Not Authenticated&quot;),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;User Not Found&quot;)
+&nbsp;    })
+&nbsp;    public ResponseEntity&lt;User&gt; updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUser updateUser) {
+<b class="fc">&nbsp;        log.info(&quot;Update User id {} with info: {}&quot;, id, updateUser);</b>
+<b class="fc">&nbsp;        User user = userRepository.updateUser(id, updateUser);</b>
+<b class="fc">&nbsp;        log.info(&quot;User id {} updated - {}&quot;, id, user);</b>
+<b class="fc">&nbsp;        return new ResponseEntity&lt;&gt;(user, HttpStatus.OK);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @DeleteMapping(&quot;/{id}&quot;)
+&nbsp;    @Operation(description = &quot;Used for deleting a user&quot;)
+&nbsp;    @ApiResponses(value = {
+&nbsp;            @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully deleted&quot;,
+&nbsp;                    headers = @Header(name = &quot;Authorization&quot;, required = true,
+&nbsp;                            description = &quot;Bearer Token for accessing the endpoint&quot;)),
+&nbsp;            @ApiResponse(responseCode = &quot;403&quot;, description = &quot;Not Authenticated&quot;),
+&nbsp;            @ApiResponse(responseCode = &quot;404&quot;, description = &quot;User Not Found&quot;),
+&nbsp;            @ApiResponse(responseCode = &quot;405&quot;, description = &quot;User Cannot Delete Itself&quot;)
+&nbsp;    })
+&nbsp;    public ResponseEntity&lt;String&gt; deleteUser(@PathVariable Long id) {
+<b class="fc">&nbsp;        log.info(&quot;Deleting User id {}&quot;, id);</b>
+<b class="fc">&nbsp;        Authentication auth = SecurityContextHolder.getContext().getAuthentication();</b>
+<b class="fc">&nbsp;        User user = userRepository.getUser(id);</b>
+<b class="fc">&nbsp;        if (auth != null &amp;&amp; user.getEmail().equals(auth.getPrincipal())) {</b>
+<b class="nc">&nbsp;            throw new NotAllowedException(&quot;User Cannot delete itself&quot;);</b>
+&nbsp;        }
+&nbsp;        //Deleting projects as there is a foreign key constraint
+&nbsp;        //Another way is to throw an error since there are projects associated
+<b class="fc">&nbsp;        userProjectRepository.deleteAllProjectsForUser(id);</b>
+<b class="fc">&nbsp;        userRepository.deleteUser(id);</b>
+<b class="fc">&nbsp;        log.info(&quot;Deleted User id {}&quot;, id);</b>
+<b class="fc">&nbsp;        return ResponseEntity.ok().build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-03 03:12</div>
+</div>
+</body>
+</html>

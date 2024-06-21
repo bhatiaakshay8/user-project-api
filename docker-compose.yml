@@ -1,0 +1,61 @@
+services:
+  user-project-api-service:
+    image: user-project-api-service:DEV-SNAPSHOT
+    container_name: "user-project-api-service"
+    networks:
+      - user-project-api-service
+    depends_on:
+      - mssql
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./user-project-api-service/src/main/docker/env.list
+
+  mssql:
+    container_name: 'mssql'
+    build:
+      context: ./mssql
+      dockerfile: mssql.Dockerfile
+    restart: on-failure
+    networks:
+      - user-project-api-service
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql:/var/opt/mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Mssq1pas_
+
+  prometheus:
+    image: prom/prometheus:v2.26.1
+    networks:
+      - user-project-api-service
+    ports:
+      - 9090:9090
+    volumes:
+      - prometheus-data:/prometheus
+      - ./user-project-api-service/src/main/docker/prometheus:/etc/prometheus
+    command: --config.file=/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:7.5.6
+    networks:
+      - user-project-api-service
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+
+networks:
+  user-project-api-service:
+    name: user-project-api-service
+    driver: bridge
+
+volumes:
+  mssql:
+  prometheus-data:
+  grafana-data:
